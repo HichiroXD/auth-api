@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RequirementController;
+use App\Http\Controllers\EvaluationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +32,7 @@ Route::post('login-project-manager', [AuthController::class, 'loginProjectManage
 Route::post('logout', [AuthController::class, 'logout'])->name('logout'); // Ruta para cerrar sesión
 
 // Registro de jefes de proyecto solo por administradores
-Route::post('register-project-manager', [AuthController::class, 'registerProjectManager'])->middleware(['auth:api'])->name('register-project-manager');
+Route::post('register-project-manager', [AuthController::class, 'registerProjectManager'])->middleware(['auth:api', 'role:admin'])->name('register-project-manager');
 
 // Rutas para la gestión de proyectos y requerimientos
 Route::middleware(['auth:api'])->group(function () {
@@ -41,9 +43,12 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     // Rutas para jefes de proyecto
-    Route::middleware('role:project-manager')->group(function () {
+    Route::middleware('auth:api')->group(function () {
         // Rutas específicas para jefes de proyecto
-        // Añadir aquí las rutas específicas para jefes de proyecto
+        Route::post('create-project', [ProjectController::class, 'createProject']);
+        Route::post('create-requirement', [RequirementController::class, 'createRequirement']);
+        Route::post('create-evaluation', [EvaluationController::class, 'createEvaluation']);
+        Route::get('project/{projectId}/evaluations', [EvaluationController::class, 'getEvaluationsByProject']);
     });
 
     // Rutas para miembros del equipo
@@ -52,3 +57,4 @@ Route::middleware(['auth:api'])->group(function () {
         // Añadir aquí las rutas específicas para miembros del equipo
     });
 });
+
