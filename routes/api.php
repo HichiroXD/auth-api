@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PrescriptionController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,7 +17,7 @@ use App\Http\Controllers\PrescriptionController;
 */
 
 // Ruta para obtener el usuario autenticado
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -28,23 +29,26 @@ Route::post('login-team-member', [AuthController::class, 'loginTeamMember'])->na
 Route::post('login-project-manager', [AuthController::class, 'loginProjectManager'])->name('login-project-manager'); // Ruta para iniciar sesión como jefe de proyecto
 Route::post('logout', [AuthController::class, 'logout'])->name('logout'); // Ruta para cerrar sesión
 
-// Registro de jefes de proyecto (antes médicos) solo por administradores
-Route::post('register-project-manager', [AuthController::class, 'registerProjectManager'])->middleware(['auth:sanctum', 'role:admin'])->name('register-project-manager');
+// Registro de jefes de proyecto solo por administradores
+Route::post('register-project-manager', [AuthController::class, 'registerProjectManager'])->middleware(['auth:api'])->name('register-project-manager');
 
 // Rutas para la gestión de proyectos y requerimientos
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     // Rutas para administradores
     Route::middleware('role:admin')->group(function () {
         // Rutas específicas para administradores
+        // Añadir aquí las rutas específicas para administradores
     });
 
-    // Rutas para jefes de proyecto (antes médicos)
+    // Rutas para jefes de proyecto
     Route::middleware('role:project-manager')->group(function () {
         // Rutas específicas para jefes de proyecto
+        // Añadir aquí las rutas específicas para jefes de proyecto
     });
 
-    // Rutas para miembros del equipo (antes pacientes)
+    // Rutas para miembros del equipo
     Route::middleware('role:team-member')->group(function () {
         // Rutas específicas para miembros del equipo
+        // Añadir aquí las rutas específicas para miembros del equipo
     });
 });

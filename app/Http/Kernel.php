@@ -4,6 +4,9 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+use Spatie\Permission\Middlewares\RoleMiddleware;
+use Spatie\Permission\Middlewares\PermissionMiddleware;
+use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 class Kernel extends HttpKernel
 {
     /**
@@ -83,4 +86,11 @@ class Kernel extends HttpKernel
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         // otros middleware...
     ];
+
+        protected $routeMiddleware = [
+            // otros middlewares
+            'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
+            'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        ];
+
 }
