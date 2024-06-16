@@ -1,5 +1,6 @@
 <?php
 
+// 2014_10_12_000000_create_users_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,14 +14,13 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        // Crear la tabla 'users' con las columnas especificadas
         Schema::create('users', function (Blueprint $table) {
-            $table->id(); // Columna de clave primaria autoincremental
-            $table->string('name'); // Columna para el nombre del usuario
-            $table->string('email')->unique(); // Columna para el email del usuario, debe ser único
-            $table->string('password'); // Columna para la contraseña del usuario
-            $table->enum('role', ['admin', 'doctor', 'patient']); // Columna para el rol del usuario, con valores posibles
-            $table->timestamps(); // Columnas para 'created_at' y 'updated_at'
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->enum('role', ['admin', 'project-manager', 'team-member']); // Actualiza los roles aquí
+            $table->timestamps();
         });
     }
 
@@ -31,7 +31,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        // Eliminar la tabla 'users' si existe
         Schema::dropIfExists('users');
     }
 }

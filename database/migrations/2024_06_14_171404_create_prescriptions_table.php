@@ -35,3 +35,4 @@ class CreatePrescriptionsTable extends Migration
         Schema::dropIfExists('prescriptions');
     }
 }
+

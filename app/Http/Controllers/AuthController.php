@@ -18,7 +18,7 @@ class AuthController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
@@ -27,6 +27,8 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
             'role' => 'admin',
         ]);
+
+        $user->assignRole('admin');
 
         return response()->json(['message' => 'Admin registrado exitosamente']);
     }
@@ -46,30 +48,32 @@ class AuthController extends Controller
     }
 
     /**
-     * Registro de pacientes
+     * Registro de miembros del equipo
      */
-    public function registerPatient(Request $request)
+    public function registerTeamMember(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
-            'role' => 'patient',
+            'role' => 'team-member',
         ]);
 
-        return response()->json(['message' => 'Paciente registrado exitosamente']);
+        $user->assignRole('team-member');
+
+        return response()->json(['message' => 'Miembro del equipo registrado exitosamente']);
     }
 
     /**
-     * Inicio de sesión de paciente
+     * Inicio de sesión de miembro del equipo
      */
-    public function loginPatient(Request $request)
+    public function loginTeamMember(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
@@ -81,34 +85,35 @@ class AuthController extends Controller
     }
 
     /**
-     * Registro de doctores por el administrador
+     * Registro de jefes de proyecto (antes doctores) por el administrador
      */
-    public function registerDoctor(Request $request)
+    public function registerProjectManager(Request $request)
     {
         // Validar los datos de entrada
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Crear el usuario con rol de doctor
+        // Crear el usuario con rol de jefe de proyecto
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
-            'role' => 'doctor',
+            'role' => 'project-manager',
         ]);
 
+        $user->assignRole('project-manager');
+
         // Retornar la respuesta
-        return response()->json(['message' => 'Doctor registrado exitosamente']);
+        return response()->json(['message' => 'Jefe de proyecto registrado exitosamente']);
     }
 
-    
     /**
-     * Inicio de sesión de doctor
-     */
-    public function loginDoctor(Request $request)
+     * Inicio de sesión de jefe de proyecto
+     */ 
+    public function loginProjectManager(Request $request)
     {
         $credentials = $request->only('email', 'password');
 

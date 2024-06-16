@@ -15,25 +15,36 @@ use App\Http\Controllers\PrescriptionController;
 |
 */
 
+// Ruta para obtener el usuario autenticado
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Rutas de autenticación
+Route::post('register-admin', [AuthController::class, 'registerAdmin'])->name('register-admin'); // Ruta para registrar administradores
+Route::post('login-admin', [AuthController::class, 'loginAdmin'])->name('login-admin'); // Ruta para iniciar sesión como administrador
+Route::post('register-team-member', [AuthController::class, 'registerTeamMember'])->name('register-team-member'); // Ruta para registrar miembros del equipo
+Route::post('login-team-member', [AuthController::class, 'loginTeamMember'])->name('login-team-member'); // Ruta para iniciar sesión como miembro del equipo
+Route::post('login-project-manager', [AuthController::class, 'loginProjectManager'])->name('login-project-manager'); // Ruta para iniciar sesión como jefe de proyecto
+Route::post('logout', [AuthController::class, 'logout'])->name('logout'); // Ruta para cerrar sesión
 
-Route::post('r-admin', [AuthController::class, 'registerAdmin']);
-Route::post('l-admin', [AuthController::class, 'loginAdmin']);
-Route::post('register', [AuthController::class, 'registerPatient']);
-Route::post('login-patient', [AuthController::class, 'loginPatient']);
-Route::post('login-dentist', [AuthController::class, 'loginDoctor']);
-Route::post('logout', [AuthController::class, 'logout']);
+// Registro de jefes de proyecto (antes médicos) solo por administradores
+Route::post('register-project-manager', [AuthController::class, 'registerProjectManager'])->middleware(['auth:sanctum', 'role:admin'])->name('register-project-manager');
 
-Route::post('register-doctor', [AuthController::class, 'registerDoctor'])->middleware('auth:api');
+// Rutas para la gestión de proyectos y requerimientos
+Route::middleware(['auth:sanctum'])->group(function () {
+    // Rutas para administradores
+    Route::middleware('role:admin')->group(function () {
+        // Rutas específicas para administradores
+    });
 
+    // Rutas para jefes de proyecto (antes médicos)
+    Route::middleware('role:project-manager')->group(function () {
+        // Rutas específicas para jefes de proyecto
+    });
 
-
-// Rutas para recetas
-Route::middleware('auth:api')->group(function () {
-    Route::post('prescriptions', [PrescriptionController::class, 'store'])->middleware('auth:api'); // Crear receta
-    Route::put('prescriptions/{id}', [PrescriptionController::class, 'update'])->middleware('role:doctor'); // Actualizar receta
-    Route::get('prescriptions/{id}', [PrescriptionController::class, 'show']); // Ver receta
+    // Rutas para miembros del equipo (antes pacientes)
+    Route::middleware('role:team-member')->group(function () {
+        // Rutas específicas para miembros del equipo
+    });
 });

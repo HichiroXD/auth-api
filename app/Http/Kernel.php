@@ -65,12 +65,22 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-    ];
-
-    protected $routeMiddleware = [
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
     ];
 
-
-
+    /**
+     * Prioridad del middleware.
+     *
+     * Asegura que el middleware de roles se ejecute antes que otros.
+     *
+     * @var array<int, class-string|string>
+     */
+    protected $middlewarePriority = [
+        \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        \Spatie\Permission\Middlewares\PermissionMiddleware::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        // otros middleware...
+    ];
 }
