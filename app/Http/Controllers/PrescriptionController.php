@@ -52,7 +52,10 @@ class PrescriptionController extends Controller
 
         $prescription = Prescription::find($id);
 
-        // Verificar que el usuario es el doctor que creó la receta
+        if (!$prescription) {
+            return response()->json(['error' => 'Receta no encontrada'], 404);
+        }
+
         if (Auth::user()->id !== $prescription->doctor_id) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
@@ -72,7 +75,10 @@ class PrescriptionController extends Controller
     {
         $prescription = Prescription::find($id);
 
-        // Verificar que el usuario es el paciente propietario de la receta o el doctor que la creó
+        if (!$prescription) {
+            return response()->json(['error' => 'Receta no encontrada'], 404);
+        }
+
         if (Auth::user()->id !== $prescription->patient_id && Auth::user()->id !== $prescription->doctor_id) {
             return response()->json(['error' => 'No autorizado'], 403);
         }

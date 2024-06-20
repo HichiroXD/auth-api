@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -18,15 +19,16 @@ class AuthController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:10',
         ]);
 
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
-            'role' => 'admin',
         ]);
+
+        $user->assignRole('admin');
 
         return response()->json(['message' => 'Admin registrado exitosamente']);
     }
@@ -53,15 +55,16 @@ class AuthController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:10',
         ]);
 
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
-            'role' => 'patient',
         ]);
+
+        $user->assignRole('paciente');
 
         return response()->json(['message' => 'Paciente registrado exitosamente']);
     }
@@ -80,6 +83,23 @@ class AuthController extends Controller
         return $this->createNewToken($token);
     }
 
+    public function updateHealthStatus(Request $request, $id)
+    {
+        // Validar la entrada
+        $validatedData = $request->validate([
+            'health_status' => 'required|integer|min:0|max:100',
+        ]);
+
+        // Encontrar al usuario
+        $user = User::findOrFail($id);
+
+        // Actualizar el estado de salud bucal
+        $user->health_status = $validatedData['health_status'];
+        $user->save();
+
+        return response()->json(['message' => 'Estado de salud bucal actualizado exitosamente']);
+    }
+
     /**
      * Registro de doctores por el administrador
      */
@@ -89,7 +109,7 @@ class AuthController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:10',
         ]);
 
         // Crear el usuario con rol de doctor
@@ -97,14 +117,14 @@ class AuthController extends Controller
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
-            'role' => 'doctor',
         ]);
+
+        $user->assignRole('dentista');
 
         // Retornar la respuesta
         return response()->json(['message' => 'Doctor registrado exitosamente']);
     }
 
-    
     /**
      * Inicio de sesión de doctor
      */
